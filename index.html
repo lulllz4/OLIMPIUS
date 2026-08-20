@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru"> 
+<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -635,53 +635,85 @@ body.in-chamber main{transform:scale(.965);filter:brightness(.6) blur(2px)}
 
 .deities{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(clamp(190px,20vw,240px),1fr));
-  gap:clamp(30px,4.5vh,56px) clamp(20px,2.6vw,40px);
+  grid-template-columns:repeat(auto-fit,minmax(clamp(180px,19vw,230px),1fr));
+  gap:clamp(34px,5vh,64px) clamp(20px,2.8vw,42px);
 }
-.deity{text-align:center}
-.deity__plate{
-  position:relative;display:block;width:100%;aspect-ratio:200/264;cursor:zoom-in;
-  background:radial-gradient(120% 90% at 50% 34%,#1B5E76,#0A3448 55%,#05222F 100%);
-  transition:transform .7s var(--ease),filter .7s var(--ease);
-  filter:drop-shadow(0 18px 30px rgba(3,16,24,.6));
-}
-.deity:hover .deity__plate{transform:translateY(-10px);filter:drop-shadow(0 30px 44px rgba(3,16,24,.7))}
-.deity__frame{position:absolute;inset:0;z-index:3;width:100%;height:100%;pointer-events:none}
-.deity__frame .band{fill:url(#goldband)}
-.deity__frame .shade{fill:#0B1E28;opacity:.5}
-.deity__frame .key use,.deity__frame .key path{fill:none;stroke:url(#goldline);stroke-width:2.4;
-  stroke-linecap:square;vector-effect:non-scaling-stroke}
-.deity__frame .rule{fill:none;stroke:#B08A34;stroke-width:.9;opacity:.5}
+.deity{text-align:center;--rim:#B8934A;--rim-hi:#E6D3A3}
 
-/* поле листа — сюда встают эмблема или фотография */
+/* ---- арочная ниша ---- */
+.deity__plate{
+  position:relative;display:block;width:100%;aspect-ratio:200/280;cursor:zoom-in;
+  transition:transform .7s var(--ease);
+}
+.deity:hover .deity__plate{transform:translateY(-8px)}
+.deity__niche{
+  position:absolute;inset:0;display:block;overflow:hidden;
+  border-radius:50% 50% 3px 3px / 35.7% 35.7% 1% 1%;
+  background:radial-gradient(120% 80% at 50% 24%,#14485A,#08344A 50%,#04202D 100%);
+  box-shadow:
+    0 0 0 1px rgba(184,147,74,.9),
+    0 0 0 5px rgba(6,32,44,.9),
+    0 0 0 6px rgba(184,147,74,.38),
+    0 22px 38px -18px rgba(2,14,20,.85);
+  transition:box-shadow .7s var(--ease);
+}
+.deity:hover .deity__niche{
+  box-shadow:
+    0 0 0 1px rgba(230,211,163,1),
+    0 0 0 5px rgba(6,32,44,.9),
+    0 0 0 6px rgba(184,147,74,.55),
+    0 30px 46px -18px rgba(2,14,20,.9);
+}
 .deity__img{
-  position:absolute;inset:0;z-index:1;width:100%;height:100%;
-  object-fit:cover;display:block;
-  filter:saturate(.92) contrast(1.02);
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform 1.1s var(--ease),filter .7s var(--ease);
+  filter:saturate(.95) contrast(1.02);
 }
-.deity__plate::after{                     /* лёгкое затемнение к краям */
-  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(120% 90% at 50% 40%,transparent 45%,rgba(4,20,28,.5) 100%);
-}
+.deity:hover .deity__img{transform:scale(1.045)}
 .has-img .deity__em{display:none}
+.deity__glow{                      /* свет сверху и тень к низу ниши */
+  position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(90% 55% at 50% 4%,rgba(240,230,196,.20),transparent 60%),
+    linear-gradient(180deg,transparent 42%,rgba(3,18,26,.62) 100%);
+}
 .deity__em{
   position:absolute;left:50%;top:50%;translate:-50% -50%;
-  z-index:2;width:42%;height:auto;fill:none;
-  stroke:var(--gold-lt);stroke-width:1.3;stroke-linejoin:round;stroke-linecap:round;
-  transition:stroke .6s var(--ease);
+  width:38%;height:auto;fill:none;
+  stroke:var(--rim-hi);stroke-width:1.3;stroke-linejoin:round;stroke-linecap:round;
+  opacity:.9;transition:stroke .6s var(--ease);
 }
-.deity__em .solid{fill:var(--gold-lt);stroke:none}
-.deity:hover .deity__em{stroke:#FBF3D2}
+.deity__em .solid{fill:var(--rim-hi);stroke:none}
+.deity:hover .deity__em{stroke:#F6ECCE}
+.deity__key{                        /* замковая пальметта */
+  position:absolute;left:50%;top:-4.6%;display:block;translate:-50% 0;width:25%;height:auto;z-index:2;
+  fill:none;stroke:var(--rim);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 2px 3px rgba(3,18,26,.95));transition:stroke .7s var(--ease);
+}
+.deity:hover .deity__key{stroke:var(--rim-hi)}
 .deity__plate.gone{visibility:hidden}
-.deity h3{
-  font-family:var(--carve);font-size:1.02rem;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--marble);margin:1rem 0 .15rem;
+
+/* ---- картуш с именем ---- */
+.cart{position:relative;padding-top:14px}
+.cart__rule{
+  display:block;width:54px;height:7px;margin:0 auto 10px;
+  background:
+    linear-gradient(90deg,transparent,var(--rim) 22%,var(--rim) 78%,transparent) center/100% 1px no-repeat;
+  position:relative;opacity:.85;
 }
-.deity .gr{display:block;font-size:.72rem;letter-spacing:.26em;color:var(--gold)}
+.cart__rule::after{
+  content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;
+  translate:-50% -50%;rotate:45deg;background:var(--rim);
+}
+.deity h3{
+  font-family:var(--carve);font-size:1rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--marble);margin:0 0 .18rem;
+}
+.deity .gr{display:block;font-size:.7rem;letter-spacing:.28em;color:var(--rim-hi);opacity:.85}
 
 @media(max-width:700px){
-  .deities{grid-template-columns:repeat(2,1fr);gap:28px 18px}
-  .deity h3{font-size:.86rem;letter-spacing:.14em}
+  .deities{grid-template-columns:repeat(2,1fr);gap:30px 18px}
+  .deity h3{font-size:.84rem;letter-spacing:.14em}
 }
 
 
@@ -734,9 +766,9 @@ body.in-chamber main{transform:scale(.965);filter:brightness(.6) blur(2px)}
   display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);
   gap:clamp(24px,4vw,60px);align-items:center;width:min(900px,100%);
 }
-.godview__plate{position:relative;width:100%;aspect-ratio:200/264;transform-origin:top left;will-change:transform}
-.godview__plate .deity__frame{position:absolute;inset:0;width:100%;height:100%;filter:url(#ink)}
-.godview__plate .deity__em{width:42%;stroke-width:1.05}
+.godview__plate{position:relative;width:100%;aspect-ratio:200/280;transform-origin:top left;will-change:transform;--rim:#B8934A;--rim-hi:#E6D3A3}
+.godview__plate .deity__em{width:34%;stroke-width:1.05}
+.godview__plate .deity__key{width:19%;top:-3.4%}
 .godview__text{opacity:0;transform:translateY(14px);transition:opacity .6s var(--ease) .34s,transform .6s var(--ease) .34s}
 .godview.on .godview__text{opacity:1;transform:none}
 .godview__tier{font-family:var(--display);font-size:.76rem;letter-spacing:.3em;color:var(--gold);display:block}
@@ -1441,50 +1473,18 @@ const PANTHEON={
  ]
 };
 
-const PLATE=(()=>{
-  /* золотая рамка лежит ПОВЕРХ изображения: подложки нет,
-     фотография видна до самого края, рамка только обрамляет её. */
-  const W=200,H=264,b=5,g=2.5,m=18;
-  const off=b+g;
-  const ky=m/40, pitch=40*(m/48);
-
-  /* кольцо: внешний прямоугольник минус внутренний */
-  const ring=(cls,x,y,w,h,t)=>
-    '<path class="'+cls+'" fill-rule="evenodd" d="M'+x+' '+y+'H'+(x+w)+'V'+(y+h)+'H'+x+'Z'+
-    'M'+(x+t)+' '+(y+t)+'H'+(x+w-t)+'V'+(y+h-t)+'H'+(x+t)+'Z"/>';
-
-  const run=(x,y,deg,len)=>{
-    const n=Math.max(1,Math.round(len/pitch)), kx=len/(n*40);
-    let u='';
-    for(let i=0;i<n;i++) u+='<use href="#key" x="'+(i*40)+'"/>';
-    return '<g class="key" transform="translate('+x+' '+y+') rotate('+deg+') scale('+
-           kx.toFixed(4)+' '+ky.toFixed(4)+') translate(0 -4)">'+u+'</g>';
-  };
-
-  const corner=(x,y,deg)=>{
-    const k=m/24;
-    return '<g class="key" transform="translate('+x+' '+y+') rotate('+deg+') scale('+k.toFixed(4)+')">'+
-           '<path d="M2 22 L2 2 L22 2 M2 22 L22 2 M7 17 L7 7 L17 7"/></g>';
-  };
-
-  const inner=W-off*2-m*2, side=H-off*2-m*2;
-
-  return '<svg class="deity__frame" viewBox="0 0 '+W+' '+H+'" aria-hidden="true">'+
-    /* подложка под ленту: лёгкая тень, чтобы меандр читался на любом снимке */
-    ring('shade',off,off,W-off*2,H-off*2,m)+
-    /* внешняя золотая полоса */
-    ring('band',0,0,W,H,b)+
-    /* лента меандра */
-    run(off+m,off,0,inner)+
-    run(W-off,off+m,90,side)+
-    run(W-off-m,H-off,180,inner)+
-    run(off,H-off-m,270,side)+
-    corner(off,off,0)+corner(W-off,off,90)+corner(W-off,H-off,180)+corner(off,H-off,270)+
-    /* тонкие линейки по краям ленты */
-    '<rect class="rule" x="'+off+'" y="'+off+'" width="'+(W-off*2)+'" height="'+(H-off*2)+'"/>'+
-    '<rect class="rule" x="'+(off+m)+'" y="'+(off+m)+'" width="'+(W-(off+m)*2)+'" height="'+(H-(off+m)*2)+'"/>'+
+/* Оправа: арочная ниша — та же арка, что во вратах и портике.
+   Золота ровно на блик: два волосяных канта и замковая пальметта. */
+const KEYSTONE=
+  '<svg class="deity__key" viewBox="0 0 40 26" aria-hidden="true">'+
+    '<path d="M20 25V6M20 25c-2-5-6-9-13-11M20 25c-1-6-2-11-4-16M20 25c2-5 6-9 13-11M20 25c1-6 2-11 4-16"/>'+
+    '<path d="M9 23c5-4 17-4 22 0"/>'+
   '</svg>';
-})();
+
+function plateHTML(em){
+  return '<span class="deity__niche">'+media(em)+'<span class="deity__glow"></span></span>'+KEYSTONE;
+}
+const PLATE='';
 
 /* картинка ищется сама: положите файл img/<ключ>.jpg — она встанет в окно листа */
 const IMG_EXT=['jpg','png','webp','jpeg'];
@@ -1502,9 +1502,10 @@ function deities(box,list){
   box.innerHTML=list.map(([ru,gr,em,txt],i)=>
     '<article class="deity">'+
       '<div class="deity__plate" role="button" tabindex="0" data-god="'+em+'" aria-label="'+ru+'">'+
-        PLATE+media(em)+
+        plateHTML(em)+
       '</div>'+
-      '<h3>'+ru+'</h3><span class="gr">'+gr+'</span>'+
+      '<div class="cart"><span class="cart__rule"></span>'+
+        '<h3>'+ru+'</h3><span class="gr">'+gr+'</span></div>'+
     '</article>').join('');
   [...box.children].forEach((el,i)=>{
     el.style.transitionDelay=(120+i*55)+'ms';
@@ -1555,7 +1556,7 @@ let gvI=-1, gvSrc=null;
 function gvFill(i){
   gvI=(i+GODS.length)%GODS.length;
   const [ru,gr,em,txt,tier]=GODS[gvI];
-  gvEl.p.innerHTML=PLATE+media(em);
+  gvEl.p.innerHTML=plateHTML(em);
   gvEl.t.textContent=tier; gvEl.g.textContent=gr; gvEl.r.textContent=ru; gvEl.x.textContent=txt;
 }
 function gvSource(){
