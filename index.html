@@ -701,33 +701,37 @@ body.in-chamber main{transform:scale(.965);filter:brightness(.6) blur(2px)}
 .deity{text-align:center}
 .deity__plate{
   position:relative;display:block;width:100%;aspect-ratio:200/264;cursor:zoom-in;
+  background:radial-gradient(120% 90% at 50% 34%,#1B5E76,#0A3448 55%,#05222F 100%);
   transition:transform .7s var(--ease),filter .7s var(--ease);
   filter:drop-shadow(0 18px 30px rgba(3,16,24,.6));
 }
 .deity:hover .deity__plate{transform:translateY(-10px);filter:drop-shadow(0 30px 44px rgba(3,16,24,.7))}
-.deity__frame{position:absolute;inset:0;width:100%;height:100%}
+.deity__frame{position:absolute;inset:0;z-index:3;width:100%;height:100%;pointer-events:none}
 .deity__frame .band{fill:url(#goldband)}
-.deity__frame .paper{fill:#F4EEDD}
-.deity__frame .win{fill:#FAF5E7}
+.deity__frame .shade{fill:#0B1E28;opacity:.5}
 .deity__frame .key use,.deity__frame .key path{fill:none;stroke:url(#goldline);stroke-width:2.4;
   stroke-linecap:square;vector-effect:non-scaling-stroke}
 .deity__frame .rule{fill:none;stroke:#B08A34;stroke-width:.9;opacity:.5}
 
 /* поле листа — сюда встают эмблема или фотография */
 .deity__img{
-  position:absolute;left:15%;top:11.36%;width:70%;height:77.3%;
+  position:absolute;inset:0;z-index:1;width:100%;height:100%;
   object-fit:cover;display:block;
-  filter:saturate(.86) sepia(.1) contrast(.98);
+  filter:saturate(.92) contrast(1.02);
+}
+.deity__plate::after{                     /* лёгкое затемнение к краям */
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 40%,transparent 45%,rgba(4,20,28,.5) 100%);
 }
 .has-img .deity__em{display:none}
 .deity__em{
   position:absolute;left:50%;top:50%;translate:-50% -50%;
-  width:42%;height:auto;fill:none;
-  stroke:#7A5A2A;stroke-width:1.3;stroke-linejoin:round;stroke-linecap:round;
+  z-index:2;width:42%;height:auto;fill:none;
+  stroke:var(--gold-lt);stroke-width:1.3;stroke-linejoin:round;stroke-linecap:round;
   transition:stroke .6s var(--ease);
 }
-.deity__em .solid{fill:#8B5B2E;stroke:none}
-.deity:hover .deity__em{stroke:#A9552F}
+.deity__em .solid{fill:var(--gold-lt);stroke:none}
+.deity:hover .deity__em{stroke:#FBF3D2}
 .deity__plate.gone{visibility:hidden}
 .deity h3{
   font-family:var(--carve);font-size:1.02rem;letter-spacing:.18em;text-transform:uppercase;
@@ -1510,14 +1514,17 @@ const PANTHEON={
 };
 
 const PLATE=(()=>{
-  /* золотая рамка с меандром по всему периметру.
-     b — внешняя полоса, g — просвет, m — высота ленты меандра. */
-  const W=200,H=264,b=5,g=3.5,m=18;
-  const off=b+g;                    /* где начинается лента */
-  const inset=off+m+g;              /* где начинается поле */
-  const ky=m/40, pitch=40*(m/48);   /* высота ключа = m, шаг по образцу */
+  /* золотая рамка лежит ПОВЕРХ изображения: подложки нет,
+     фотография видна до самого края, рамка только обрамляет её. */
+  const W=200,H=264,b=5,g=2.5,m=18;
+  const off=b+g;
+  const ky=m/40, pitch=40*(m/48);
 
-  /* один прогон меандра длиной len, начиная от угла */
+  /* кольцо: внешний прямоугольник минус внутренний */
+  const ring=(cls,x,y,w,h,t)=>
+    '<path class="'+cls+'" fill-rule="evenodd" d="M'+x+' '+y+'H'+(x+w)+'V'+(y+h)+'H'+x+'Z'+
+    'M'+(x+t)+' '+(y+t)+'H'+(x+w-t)+'V'+(y+h-t)+'H'+(x+t)+'Z"/>';
+
   const run=(x,y,deg,len)=>{
     const n=Math.max(1,Math.round(len/pitch)), kx=len/(n*40);
     let u='';
@@ -1526,33 +1533,28 @@ const PLATE=(()=>{
            kx.toFixed(4)+' '+ky.toFixed(4)+') translate(0 -4)">'+u+'</g>';
   };
 
-  /* угловой завиток в квадрате m×m */
   const corner=(x,y,deg)=>{
     const k=m/24;
-    const d='M2 22 L2 2 L22 2 M2 22 L22 2 M7 17 L7 7 L17 7';
-    return '<g class="key corner" transform="translate('+x+' '+y+') rotate('+deg+') scale('+k.toFixed(4)+')">'+
-           '<path d="'+d+'"/></g>';
+    return '<g class="key" transform="translate('+x+' '+y+') rotate('+deg+') scale('+k.toFixed(4)+')">'+
+           '<path d="M2 22 L2 2 L22 2 M2 22 L22 2 M7 17 L7 7 L17 7"/></g>';
   };
 
-  const inner=W-off*2-m*2;          /* прогон по горизонтали между углами */
-  const side=H-off*2-m*2;           /* прогон по вертикали */
+  const inner=W-off*2-m*2, side=H-off*2-m*2;
 
   return '<svg class="deity__frame" viewBox="0 0 '+W+' '+H+'" aria-hidden="true">'+
+    /* подложка под ленту: лёгкая тень, чтобы меандр читался на любом снимке */
+    ring('shade',off,off,W-off*2,H-off*2,m)+
     /* внешняя золотая полоса */
-    '<rect class="band" x="0" y="0" width="'+W+'" height="'+H+'"/>'+
-    '<rect class="paper" x="'+b+'" y="'+b+'" width="'+(W-b*2)+'" height="'+(H-b*2)+'"/>'+
+    ring('band',0,0,W,H,b)+
     /* лента меандра */
-    run(off+m, off, 0, inner)+
-    run(W-off, off+m, 90, side)+
-    run(W-off-m, H-off, 180, inner)+
-    run(off, H-off-m, 270, side)+
-    /* углы: завиток и скос, чтобы лента не обрывалась */
+    run(off+m,off,0,inner)+
+    run(W-off,off+m,90,side)+
+    run(W-off-m,H-off,180,inner)+
+    run(off,H-off-m,270,side)+
     corner(off,off,0)+corner(W-off,off,90)+corner(W-off,H-off,180)+corner(off,H-off,270)+
-    /* тонкие линейки снаружи и внутри ленты */
+    /* тонкие линейки по краям ленты */
     '<rect class="rule" x="'+off+'" y="'+off+'" width="'+(W-off*2)+'" height="'+(H-off*2)+'"/>'+
     '<rect class="rule" x="'+(off+m)+'" y="'+(off+m)+'" width="'+(W-(off+m)*2)+'" height="'+(H-(off+m)*2)+'"/>'+
-    /* поле */
-    '<rect class="win" x="'+inset+'" y="'+inset+'" width="'+(W-inset*2)+'" height="'+(H-inset*2)+'"/>'+
   '</svg>';
 })();
 
